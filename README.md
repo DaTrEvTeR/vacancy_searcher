@@ -38,6 +38,6 @@ python main.py
 
 ### Mykhailo Rozhkov
 
-[LinkedIn](https://github.com/DaTrEvTeR)  
+[LinkedIn](https://www.linkedin.com/in/mykhailo-rozhkov/)  
 [Telegram](https://t.me/datrevter)  
 Email: rozhkovm176@gmail.com
