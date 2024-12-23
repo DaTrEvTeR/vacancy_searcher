@@ -1,6 +1,14 @@
-from uuid import uuid4
+import uuid
 
-from sqlalchemy import INTEGER, UUID, ForeignKey, String, Enum
+from sqlalchemy import (
+    BOOLEAN,
+    INTEGER,
+    String,
+    Enum,
+    ForeignKey,
+    UUID,
+    PrimaryKeyConstraint,
+)
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from app.config.enums import ExperienceEnum
@@ -8,53 +16,45 @@ from app.db.base_model import Base
 
 
 class User(Base):
+    # table metadata
     __tablename__ = "users"
-
+    # model attrs
     id: Mapped[int] = mapped_column(INTEGER, primary_key=True)
-
-    filters: Mapped[list["Filter"]] = relationship("Filter", back_populates="user")
+    # relationships
+    filters: Mapped[list["Filter"]] = relationship(
+        "Filter", back_populates="user", lazy="joined", cascade="all, delete-orphan"
+    )
 
 
 class Filter(Base):
+    # table metadata
     __tablename__ = "filters"
-
-    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid4)
-
-    user_id: Mapped[User] = mapped_column(
-        ForeignKey(User.id, ondelete="CASCADE"), nullable=False
-    )
-    user: Mapped[User] = relationship(User, back_populates="filters", lazy="joined")
-
-    title: Mapped[str] = mapped_column(String(30))
-    experience: Mapped[ExperienceEnum] = mapped_column(
-        Enum(ExperienceEnum), nullable=True
-    )
-    abroad: Mapped[bool]
-    only_remote: Mapped[bool]
-
-    sites: Mapped[list["Site"]] = relationship(
-        secondary="sites_filters", back_populates="filters", lazy="joined"
-    )
+    # model attrs
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String(32), nullable=False)
+    experience: Mapped[ExperienceEnum] = mapped_column(Enum(ExperienceEnum), nullable=False)
+    abroad: Mapped[bool] = mapped_column(BOOLEAN, default=False)
+    only_remote: Mapped[bool] = mapped_column(BOOLEAN, default=False)
+    active: Mapped[bool] = mapped_column(BOOLEAN, default=True)
+    # relationships
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user: Mapped["User"] = relationship("User", back_populates="filters", lazy="selectin")
+    sites: Mapped[list["Site"]] = relationship(secondary="sites_filters", back_populates="filters", lazy="selectin")
 
 
 class Site(Base):
+    # table metadata
     __tablename__ = "sites"
-
-    site: Mapped[str] = mapped_column(String(30), primary_key=True)
-
-    filters: Mapped[list["Filter"]] = relationship(
-        secondary="sites_filters", back_populates="sites", lazy="joined"
-    )
+    # model attrs
+    site_name: Mapped[str] = mapped_column(String(32), primary_key=True)
+    # relationships
+    filters: Mapped[list["Filter"]] = relationship(secondary="sites_filters", back_populates="sites")
 
 
 class SiteFilter(Base):
+    # table metadata
     __tablename__ = "sites_filters"
-
-    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid4)
-
-    site_id: Mapped[Site] = mapped_column(
-        ForeignKey(Site.site, ondelete="CASCADE"), nullable=False
-    )
-    filter_id: Mapped[Filter] = mapped_column(
-        ForeignKey(Filter.id, ondelete="CASCADE"), nullable=False
-    )
+    __table_args__ = (PrimaryKeyConstraint("site_name", "filter_id"),)
+    # relationships
+    site_name: Mapped[str] = mapped_column(ForeignKey("sites.site_name", ondelete="CASCADE"), nullable=False)
+    filter_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("filters.id", ondelete="CASCADE"), nullable=False)
