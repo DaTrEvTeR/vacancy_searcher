@@ -11,3 +11,9 @@ async def main():
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     except Exception as e:
         logging.critical(f"{e}\n\napp shuts down")
+    # from app.db.models import Filter
+    # from app.db.db import session_maker
+    # async with session_maker() as db:
+    #     filters = await Filter.read_all(db)
+    #     for filt in filters:
+    #         await filt.delete(db)

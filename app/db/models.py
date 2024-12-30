@@ -8,7 +8,9 @@ from sqlalchemy import (
     ForeignKey,
     UUID,
     PrimaryKeyConstraint,
+    select,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
 from app.config.enums import ExperienceEnum
@@ -33,13 +35,18 @@ class Filter(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(String(32), nullable=False)
     experience: Mapped[ExperienceEnum] = mapped_column(Enum(ExperienceEnum), nullable=False)
-    abroad: Mapped[bool] = mapped_column(BOOLEAN, default=False)
     only_remote: Mapped[bool] = mapped_column(BOOLEAN, default=False)
     active: Mapped[bool] = mapped_column(BOOLEAN, default=True)
     # relationships
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user: Mapped["User"] = relationship("User", back_populates="filters", lazy="selectin")
     sites: Mapped[list["Site"]] = relationship(secondary="sites_filters", back_populates="filters", lazy="selectin")
+
+    @classmethod
+    async def get_user_filters_ids(cls, db: AsyncSession, user_id: int) -> list[uuid.UUID]:
+        statement = select(cls.id).filter(cls.user_id == user_id)
+        result = await db.execute(statement)
+        return list(result.unique().scalars().all())
 
 
 class Site(Base):
@@ -48,7 +55,7 @@ class Site(Base):
     # model attrs
     site_name: Mapped[str] = mapped_column(String(32), primary_key=True)
     # relationships
-    filters: Mapped[list["Filter"]] = relationship(secondary="sites_filters", back_populates="sites")
+    filters: Mapped[list["Filter"]] = relationship(secondary="sites_filters", back_populates="sites", lazy="selectin")
 
 
 class SiteFilter(Base):

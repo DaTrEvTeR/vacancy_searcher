@@ -33,15 +33,15 @@ class Base(AsyncAttrs, DeclarativeBase):
 
     async def update(self, db: AsyncSession, **new_data) -> None:
         """Update object data, commt to db and refresh it"""
-        for k, v in new_data.items():
-            if hasattr(self, k):
-                setattr(self, k, v)
-            else:
-                raise AttributeError(f"Model {type(self)} has no attribute {k}")
+        if new_data:
+            for k, v in new_data.items():
+                if hasattr(self, k):
+                    setattr(self, k, v)
+                else:
+                    raise AttributeError(f"Model {type(self)} has no attribute {k}")
         db.add(self)
         try:
             await db.commit()
-            await db.refresh(self)
         except Exception as e:
             await db.rollback()
             raise e

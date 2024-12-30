@@ -1,3 +1,4 @@
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command, CommandStart
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
@@ -28,23 +29,29 @@ async def menu(msg: Message):
 
 @main_menu.callback_query(F.data == "help")
 async def help(cb: CallbackQuery):
-    await cb.message.edit_text(
-        "Цей бот використовує багаторівневе `Inline` меню, "
-        "тому для його використання не потрібно читати опис команд або прописувати спеціальні слова."
-        "\n\nЩоб знову викликати головне меню - використайте команду /menu"
-        "\n\nДля зміни мови інтерфейсу з української на англійську використайте команду /chl",
-        reply_markup=get_main_menu_kb(),
-    )
+    try:
+        await cb.message.edit_text(
+            "Цей бот використовує багаторівневе `Inline` меню, "
+            "тому для його використання не потрібно читати опис команд або прописувати спеціальні слова."
+            "\n\nЩоб знову викликати головне меню - використайте команду /menu"
+            "\n\nДля зміни мови інтерфейсу з української на англійську використайте команду /chl",
+            reply_markup=get_main_menu_kb(),
+        )
+    except TelegramBadRequest:
+        await cb.answer("Ви вже переглядаєте довідку")
 
 
 @main_menu.callback_query(F.data == "about")
 async def about(cb: CallbackQuery):
-    await cb.message.edit_text(
-        "Цей бот розробив @datrevter"
-        "\nЯкщо у вас є зауваження або пропозиція по роботі бота - буду радий поспілкуватися"
-        "\n\nГоловна ціль цього проекту облегшити пошук вакансій на великій кількості платформ. "
-        "Бот замість вас 'обходить' усі вказані платформи роботодавців за вказаними фільтрами, "
-        "що домогає вам зосередитися на покращенні своїх навичок"
-        "\n\nЯкщо мені вдалося допомогти вам - буду вдячний за зворотний зв'язок",
-        reply_markup=get_main_menu_kb(),
-    )
+    try:
+        await cb.message.edit_text(
+            "Цей бот розробив @datrevter"
+            "\nЯкщо у вас є зауваження або пропозиція по роботі бота - буду радий поспілкуватися"
+            "\n\nГоловна ціль цього проекту облегшити пошук вакансій на великій кількості платформ. "
+            "Бот замість вас 'обходить' усі вказані платформи роботодавців за вказаними фільтрами, "
+            "що домогає вам зосередитися на покращенні своїх навичок"
+            "\n\nЯкщо мені вдалося допомогти вам - буду вдячний за зворотний зв'язок",
+            reply_markup=get_main_menu_kb(),
+        )
+    except TelegramBadRequest:
+        await cb.answer("Ви вже переглядаєте про проект")

@@ -5,12 +5,11 @@ from app.config.paths import ENV_FILE_PATH
 
 class Settings(BaseSettings):
     BOT__TOKEN: str
+    max_filters_for_one_user: int = 3
 
     sqlalchemy__database_url: str
 
-    model_config = SettingsConfigDict(
-        env_file=ENV_FILE_PATH, env_file_encoding="utf-8", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=ENV_FILE_PATH, env_file_encoding="utf-8", extra="ignore")
 
 
 settings = Settings()
