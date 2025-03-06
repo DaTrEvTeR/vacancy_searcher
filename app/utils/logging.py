@@ -6,6 +6,8 @@ from app.config.paths import LOGS_DIR
 
 
 def init_logging() -> None:
+    if not LOGS_DIR.exists():
+        LOGS_DIR.mkdir()
     logging.basicConfig(
         level=logging.INFO,
         format="[%(asctime)s.%(msecs)03d] "
