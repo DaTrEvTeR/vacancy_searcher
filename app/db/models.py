@@ -62,6 +62,8 @@ class SiteFilter(Base):
     # table metadata
     __tablename__ = "sites_filters"
     __table_args__ = (PrimaryKeyConstraint("site_name", "filter_id"),)
+    # model attrs
+    last_sent_link: Mapped[str] = mapped_column(String(), nullable=True)
     # relationships
     site_name: Mapped[str] = mapped_column(ForeignKey("sites.site_name", ondelete="CASCADE"), nullable=False)
     filter_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("filters.id", ondelete="CASCADE"), nullable=False)
