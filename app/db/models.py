@@ -45,8 +45,8 @@ class Filter(Base):
     @classmethod
     async def get_user_filters_ids(cls, db: AsyncSession, user_id: int) -> list[uuid.UUID]:
         statement = select(cls.id).filter(cls.user_id == user_id)
-        result = await db.execute(statement)
-        return list(result.unique().scalars().all())
+        await db.execute(statement)
+        return list((await db.execute(statement)).scalars().fetchall())
 
 
 class Site(Base):
@@ -63,7 +63,7 @@ class SiteFilter(Base):
     __tablename__ = "sites_filters"
     __table_args__ = (PrimaryKeyConstraint("site_name", "filter_id"),)
     # model attrs
-    last_sent_link: Mapped[str] = mapped_column(String(), nullable=True)
+    last_sent_link: Mapped[str] = mapped_column(String(), nullable=True, index=True)
     # relationships
     site_name: Mapped[str] = mapped_column(ForeignKey("sites.site_name", ondelete="CASCADE"), nullable=False)
     filter_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("filters.id", ondelete="CASCADE"), nullable=False)
