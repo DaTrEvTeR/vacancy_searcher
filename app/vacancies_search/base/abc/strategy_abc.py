@@ -12,5 +12,5 @@ class Strategy(ABC):
     _parser: Parser
 
     @abstractmethod
-    async def get_vacancies(self, filt_obj: Filter) -> list[dict]:
+    async def get_vacancies(self, filt_obj: Filter, last_sent_link: str) -> list[dict]:
         pass

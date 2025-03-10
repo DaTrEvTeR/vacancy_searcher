@@ -8,6 +8,6 @@ class BaseStrategy(Strategy):
         super().__init_subclass__(**kwargs)
         StrategyRegistry.register(cls)
 
-    async def get_vacancies(self, filt_obj: Filter) -> list[dict]:
+    async def get_vacancies(self, filt_obj: Filter, last_sent_link: str) -> list[dict]:
         data = self._scraper.get_data(filt_obj)
-        return self._parser.parse_data(data)
+        return self._parser.parse_data(data, last_sent_link)

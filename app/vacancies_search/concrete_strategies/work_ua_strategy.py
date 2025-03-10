@@ -13,21 +13,24 @@ class WorkUaStrategy(BaseStrategy):
     _parser: WorkUaParser = WorkUaParser()
 
     @classmethod
-    async def get_vacancies(cls, filt_obj: Filter) -> list[dict]:
+    async def get_vacancies(cls, filt_obj: Filter, last_sent_link: str | None = None) -> list[dict]:
         proccesing: bool = True
-        page = 1
+        page = 0
         res = []
 
         while proccesing:
+            page += 1
+
             data = await cls._scraper.get_data(filt_obj=filt_obj, page=page)
 
             soup = BeautifulSoup(data, "lxml")
-            soup.find()  ### todo: rework when release last link storage
+            if last_sent_link:
+                links = [a["href"] for a in soup.select("h2.my-0 > a") if "href" in a.attrs]
+                if last_sent_link in links:
+                    proccesing = False
             if not soup.select_one("#pjax-job-list > nav > ul.pagination.hidden-xs > li.no-style.add-left-default"):
                 proccesing = False
-            else:
-                page += 1
 
-            res += cls._parser.parse_data(soup)
+            res += cls._parser.parse_data(soup, last_sent_link)
 
         return res
