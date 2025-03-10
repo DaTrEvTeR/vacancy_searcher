@@ -16,7 +16,6 @@ edit_expirience_router = Router(name="edit_expirience")
 async def edit_exp(cb: CallbackQuery):
     txt = "Виберіть досвід у спеціалізації"
     kb = get_experience_enum_kb()
-    print(kb)
     await cb.message.edit_text(text=txt, reply_markup=kb)
 
 
