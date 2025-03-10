@@ -1,5 +1,3 @@
-from typing import List
-
 from app.db.models import Filter
 from app.vacancies_search.base.abc.strategy_abc import Strategy
 from app.vacancies_search.base.strategy_registry import StrategyRegistry
@@ -10,6 +8,6 @@ class BaseStrategy(Strategy):
         super().__init_subclass__(**kwargs)
         StrategyRegistry.register(cls)
 
-    async def get_vacancies(self, filt_obj: Filter) -> List:  # todo: list[VacancyModel] when release VacancyModel
+    async def get_vacancies(self, filt_obj: Filter) -> list[dict]:
         data = self._scraper.get_data(filt_obj)
         return self._parser.parse_data(data)

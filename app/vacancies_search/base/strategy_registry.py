@@ -26,5 +26,5 @@ class StrategyRegistry:
             raise ValueError(f"No strategy found for site: {site_name}")
 
     @classmethod
-    def all_sites(cls) -> List[str]:
+    def get_all_sites(cls) -> List[str]:
         return list(cls._registry.keys())

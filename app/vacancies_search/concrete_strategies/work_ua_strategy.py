@@ -1,4 +1,3 @@
-from typing import List
 from bs4 import BeautifulSoup
 
 from app.db.models import Filter
@@ -14,7 +13,7 @@ class WorkUaStrategy(BaseStrategy):
     _parser: WorkUaParser = WorkUaParser()
 
     @classmethod
-    async def get_vacancies(cls, filt_obj: Filter) -> List:  # todo: list[VacancyModel] when release VacancyModel
+    async def get_vacancies(cls, filt_obj: Filter) -> list[dict]:
         proccesing: bool = True
         page = 1
         res = []
