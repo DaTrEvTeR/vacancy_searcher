@@ -1,6 +1,7 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bot.keyboards.filters.callback_data import EditFilterCBD
@@ -8,9 +9,8 @@ from app.bot.keyboards.filters.continue_kb import continue_kb
 from app.bot.midlewares.db import DataBaseSession
 from app.bot.utils.base_filter_schema import FilterSchema
 from app.config.enums import EditFilterAction
-from app.bot.handlers.filters.editing_filter_process.temp import get_sites_models
 from app.db.db import session_maker
-from app.db.models import Filter
+from app.db.models import Filter, Site
 
 save_router = Router(name="save")
 save_router.callback_query.middleware(DataBaseSession(session_maker))
@@ -26,8 +26,8 @@ async def save(cb: CallbackQuery, db: AsyncSession, state: FSMContext):
         return await cb.answer("Вкажіть досвід")
     if not filt_schema.sites:
         return await cb.answer("Вкажіть сайти")
-    str_to_model = await get_sites_models(db)
-    sites = [str_to_model[site] for site in filt_schema.sites]
+    statement = select(Site).where(Site.site_name.in_(filt_schema.sites))
+    sites = (await db.execute(statement)).scalars().fetchall()
     filt_id = filt_schema.id
     if filt_id:
         filt_obj = await Filter.read_one(db, id=filt_id)

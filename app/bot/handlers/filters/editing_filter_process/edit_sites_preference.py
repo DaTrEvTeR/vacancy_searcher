@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from app.bot.keyboards.filters.callback_data import EditFilterCBD, FilterCBD, SitesCBD
 from app.bot.utils.base_filter_schema import FilterSchema
 from app.config.enums import EditFilterAction, FilterAction
+from app.vacancies_search.base.strategy_registry import StrategyRegistry
 
 edit_sites_preference_router = Router(name="edit_sites_preference")
 
@@ -16,12 +17,9 @@ emoji_map = {
 }
 
 
-# todo: redo it when create the model parsers
 @edit_sites_preference_router.callback_query(EditFilterCBD.filter(F.action == EditFilterAction.sites))
 async def edit_sites(cb: CallbackQuery, state: FSMContext):
-    ### for test
-    sites = ["work.ua", "robota.ua", "dou.ua", "djinny.com"]
-    ###
+    sites = StrategyRegistry.get_all_sites()
     data = await state.get_data()
     filt_obj: FilterSchema = data.get("filt_obj")
     msg = ""
@@ -39,9 +37,7 @@ async def edit_sites(cb: CallbackQuery, state: FSMContext):
 
 @edit_sites_preference_router.callback_query(SitesCBD.filter())
 async def set_preference(cb: CallbackQuery, callback_data: SitesCBD, state: FSMContext):
-    ### for test
-    sites = ["work.ua", "robota.ua", "dou.ua", "djinny.com"]
-    ###
+    sites = StrategyRegistry.get_all_sites()
     data = await state.get_data()
     filt_obj: FilterSchema = data.get("filt_obj")
     site = callback_data.site_name

@@ -1,5 +1,6 @@
 from typing import List
 
+from app.db.models import Filter
 from app.vacancies_search.base.abc.strategy_abc import Strategy
 
 
@@ -15,5 +16,5 @@ class Context:
     def strategy(self, strategy: Strategy) -> None:
         self._strategy = strategy
 
-    def get_vacancies(self, filt_obj=None) -> List:  # todo: list[VacancyModel] when release VacancyModel
-        return self._strategy.get_vacancies(filt_obj=filt_obj)
+    async def get_vacancies(self, filt_obj: Filter, last_sent_link: str) -> List[dict]:
+        return await self._strategy.get_vacancies(filt_obj=filt_obj, last_sent_link=last_sent_link)
