@@ -8,8 +8,8 @@ from app.vacancies_search.base.abc.scraper_abc import Scraper
 class Strategy(ABC):
     __site_name__: str
 
-    _scraper: Scraper
-    _parser: Parser
+    _scraper: type[Scraper]
+    _parser: type[Parser]
 
     @abstractmethod
     async def get_vacancies(self, filt_obj: Filter, last_sent_link: str) -> list[dict]:

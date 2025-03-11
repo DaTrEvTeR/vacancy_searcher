@@ -1,3 +1,4 @@
+import logging
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
@@ -30,7 +31,10 @@ async def cancel_confirm(cb: CallbackQuery, callback_data: DeleteCBD, db: AsyncS
     await db.execute(statement)
     await db.commit()
     data = await state.get_data()
-    del data["user_filters"]
+    try:
+        del data["user_filters"]
+    except KeyError:
+        logging.warning("Attempted to delete the custom filter cache, but the cache was not initialized.")
     await state.set_data(data)
 
     txt = "Фільтр видалено"

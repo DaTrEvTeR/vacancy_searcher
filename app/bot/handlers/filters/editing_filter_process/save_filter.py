@@ -1,3 +1,4 @@
+import logging
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
@@ -49,7 +50,10 @@ async def save(cb: CallbackQuery, db: AsyncSession, state: FSMContext):
     else:
         await filt_obj.create(db)
     del data["filt_obj"]
-    del data["user_filters"]
+    try:
+        del data["user_filters"]
+    except KeyError:
+        logging.warning("Attempted to delete the custom filter cache, but the cache was not initialized.")
     await state.set_data(data)
     txt = "Фільтр збережено"
     kb = continue_kb(filt_id)

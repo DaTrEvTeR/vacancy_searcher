@@ -9,5 +9,5 @@ class BaseStrategy(Strategy):
         StrategyRegistry.register(cls)
 
     async def get_vacancies(self, filt_obj: Filter, last_sent_link: str) -> list[dict]:
-        data = self._scraper.get_data(filt_obj)
-        return self._parser.parse_data(data, last_sent_link)
+        data = self._scraper().get_data(filt_obj)
+        return self._parser().parse_data(data, last_sent_link)
