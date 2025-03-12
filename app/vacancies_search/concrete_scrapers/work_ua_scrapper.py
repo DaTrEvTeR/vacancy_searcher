@@ -22,5 +22,5 @@ class WorkUaScraper(Scraper):
         if filt_obj.only_remote:
             url += "-remote"
         jt = "+".join(filt_obj.title.strip().split())
-        url += "-" + jt + f"/?page={page}"
+        url += "-" + jt + f"/?page={page}&days=123"
         return url
